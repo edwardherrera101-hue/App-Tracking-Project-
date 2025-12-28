@@ -1,23 +1,368 @@
-let data = JSON.parse(localStorage.getItem("periodApp")) || { users: {} };
-let currentUser = null;
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cycle Tracker</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="login" id="login-section">
+        <div class="card">
+          <h1>Welcome back</h1>
+          <p class="muted">Sign in to save your cycle entries locally.</p>
+          <form id="login-form">
+            <label class="field">
+              <span>Name</span>
+              <input type="text" id="login-name" name="name" required />
+            </label>
+            <label class="field">
+              <span>Email</span>
+              <input type="email" id="login-email" name="email" required />
+            </label>
+            <button type="submit" class="primary">Save & continue</button>
+          </form>
+        </div>
+      </section>
 
-function login() {
-  const user = username.value.trim();
-  const pin = pin.value;
+      <section class="tracker hidden" id="tracker-section">
+        <header class="tracker-header">
+          <div>
+            <p class="muted">Signed in as</p>
+            <h2 id="user-name">User</h2>
+          </div>
+          <div class="header-actions">
+            <button id="logout" class="ghost">Log out</button>
+          </div>
+        </header>
 
-  if (!user || !pin) return alert("Enter username and PIN");
+        <section class="calendar-panel">
+          <div class="calendar-header">
+            <button id="prev-month" class="ghost">&#8592;</button>
+            <h3 id="current-month">Month</h3>
+            <button id="next-month" class="ghost">&#8594;</button>
+          </div>
+          <div class="weekday-row">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+          </div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </section>
 
-  if (!data.users[user]) {
-    data.users[user] = { pin, entries: {} };
-  } else if (data.users[user].pin !== pin) {
-    return alert("Wrong PIN");
+        <section class="entry-panel" id="entry-panel">
+          <header>
+            <h3 id="selected-date">Select a date</h3>
+            <p class="muted">Tap a day to log period details.</p>
+          </header>
+          <form id="entry-form" class="entry-form">
+            <label class="field">
+              <span>Period status</span>
+              <select id="period-status" required>
+                <option value="">Select</option>
+                <option value="start">Period start</option>
+                <option value="end">Period end</option>
+                <option value="spotting">Spotting</option>
+                <option value="none">No period</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Flow level</span>
+              <select id="flow-level">
+                <option value="">Select</option>
+                <option value="light">Light</option>
+                <option value="medium">Medium</option>
+                <option value="heavy">Heavy</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Symptoms</span>
+              <select id="symptoms">
+                <option value="">Select</option>
+                <option value="cramps">Cramps</option>
+                <option value="bloating">Bloating</option>
+                <option value="headache">Headache</option>
+                <option value="fatigue">Fatigue</option>
+                <option value="mood">Mood swings</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Notes</span>
+              <textarea id="notes" rows="3" placeholder="Any additional notes..."></textarea>
+            </label>
+            <button type="submit" class="primary">Save entry</button>
+            <button type="button" class="ghost" id="clear-entry">Clear entry</button>
+          </form>
+        </section>
+
+        <section class="history-panel">
+          <h3>Recent entries</h3>
+          <ul id="entry-list" class="entry-list"></ul>
+        </section>
+      </section>
+    </main>
+
+    <script src="src/app.js"></script>
+  </body>
+</html>
+src/app.js
+New
++246
+-0
+
+const USER_KEY = "cycle-tracker-user";
+const ENTRY_KEY = "cycle-tracker-entries";
+
+const loginSection = document.getElementById("login-section");
+const loginForm = document.getElementById("login-form");
+const loginName = document.getElementById("login-name");
+const loginEmail = document.getElementById("login-email");
+const trackerSection = document.getElementById("tracker-section");
+const userName = document.getElementById("user-name");
+const logoutButton = document.getElementById("logout");
+
+const calendarGrid = document.getElementById("calendar-grid");
+const currentMonthLabel = document.getElementById("current-month");
+const prevMonthButton = document.getElementById("prev-month");
+const nextMonthButton = document.getElementById("next-month");
+
+const entryPanel = document.getElementById("entry-panel");
+const selectedDateLabel = document.getElementById("selected-date");
+const entryForm = document.getElementById("entry-form");
+const periodStatus = document.getElementById("period-status");
+const flowLevel = document.getElementById("flow-level");
+const symptoms = document.getElementById("symptoms");
+const notes = document.getElementById("notes");
+const clearEntryButton = document.getElementById("clear-entry");
+const entryList = document.getElementById("entry-list");
+
+let selectedDate = null;
+let activeMonth = new Date();
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  year: "numeric",
+});
+
+const shortDateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+const loadUser = () => {
+  const raw = localStorage.getItem(USER_KEY);
+  return raw ? JSON.parse(raw) : null;
+};
+
+const saveUser = (user) => {
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+};
+
+const loadEntries = () => {
+  const raw = localStorage.getItem(ENTRY_KEY);
+  return raw ? JSON.parse(raw) : {};
+};
+
+const saveEntries = (entries) => {
+  localStorage.setItem(ENTRY_KEY, JSON.stringify(entries));
+};
+
+const toISODate = (date) => date.toISOString().split("T")[0];
+
+const setActiveView = (isLoggedIn) => {
+  loginSection.classList.toggle("hidden", isLoggedIn);
+  trackerSection.classList.toggle("hidden", !isLoggedIn);
+};
+
+const updateUserHeader = (user) => {
+  userName.textContent = user?.name ?? "User";
+};
+
+const renderCalendar = () => {
+  calendarGrid.innerHTML = "";
+
+  const startOfMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), 1);
+  const endOfMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth() + 1, 0);
+  const startDay = startOfMonth.getDay();
+  const totalDays = endOfMonth.getDate();
+  const entries = loadEntries();
+
+  currentMonthLabel.textContent = dateFormatter.format(activeMonth);
+
+  for (let i = 0; i < startDay; i += 1) {
+    const emptyCell = document.createElement("div");
+    calendarGrid.appendChild(emptyCell);
   }
 
-  currentUser = user;
-  localStorage.setItem("periodApp", JSON.stringify(data));
+  for (let day = 1; day <= totalDays; day += 1) {
+    const cell = document.createElement("div");
+    cell.className = "calendar-day";
 
-  document.getElementById("login").style.display = "none";
-  document.getElementById("app").style.display = "block";
+    const date = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), day);
+    const isoDate = toISODate(date);
+    const entry = entries[isoDate];
+
+    if (entry) {
+      cell.classList.add("has-entry");
+    }
+
+    if (selectedDate === isoDate) {
+      cell.classList.add("active");
+    }
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = day;
+    button.addEventListener("click", () => selectDate(isoDate));
+
+    const label = document.createElement("small");
+    label.textContent = entry?.status ? entry.status.replace("-", " ") : "";
+
+    cell.appendChild(button);
+    cell.appendChild(label);
+    calendarGrid.appendChild(cell);
+  }
+};
+
+const updateEntryPanel = (dateKey) => {
+  if (!dateKey) {
+    selectedDateLabel.textContent = "Select a date";
+    entryPanel.classList.add("hidden");
+    return;
+  }
+
+  const entries = loadEntries();
+  const entry = entries[dateKey];
+  const date = new Date(dateKey + "T00:00:00");
+
+  selectedDateLabel.textContent = shortDateFormatter.format(date);
+  periodStatus.value = entry?.status ?? "";
+  flowLevel.value = entry?.flow ?? "";
+  symptoms.value = entry?.symptoms ?? "";
+  notes.value = entry?.notes ?? "";
+
+  entryPanel.classList.remove("hidden");
+};
+
+const selectDate = (dateKey) => {
+  selectedDate = dateKey;
+  updateEntryPanel(dateKey);
+  renderCalendar();
+};
+
+const renderEntryList = () => {
+  const entries = loadEntries();
+  const items = Object.entries(entries)
+    .sort(([a], [b]) => (a < b ? 1 : -1))
+    .slice(0, 6);
+
+  entryList.innerHTML = "";
+
+  if (!items.length) {
+    const empty = document.createElement("li");
+    empty.textContent = "No entries yet. Select a date to log your cycle.";
+    entryList.appendChild(empty);
+    return;
+  }
+
+  items.forEach(([dateKey, entry]) => {
+    const listItem = document.createElement("li");
+    const date = new Date(dateKey + "T00:00:00");
+    const details = [entry.status, entry.flow, entry.symptoms].filter(Boolean).join(" · ");
+
+    listItem.innerHTML = `
+      <strong>${shortDateFormatter.format(date)}</strong>
+      <div>${details || "No details"}</div>
+      <div class="muted">${entry.notes || ""}</div>
+    `;
+    entryList.appendChild(listItem);
+  });
+};
+
+loginForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const user = {
+    name: loginName.value.trim(),
+    email: loginEmail.value.trim(),
+  };
+
+  if (!user.name || !user.email) return;
+
+  saveUser(user);
+  updateUserHeader(user);
+  setActiveView(true);
+  renderCalendar();
+  renderEntryList();
+});
+
+logoutButton.addEventListener("click", () => {
+  setActiveView(false);
+  loginForm.reset();
+});
+
+entryForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!selectedDate) return;
+
+  const entries = loadEntries();
+  entries[selectedDate] = {
+    status: periodStatus.value,
+    flow: flowLevel.value,
+    symptoms: symptoms.value,
+    notes: notes.value.trim(),
+  };
+
+  saveEntries(entries);
+  renderCalendar();
+  renderEntryList();
+});
+
+clearEntryButton.addEventListener("click", () => {
+  if (!selectedDate) return;
+
+  const entries = loadEntries();
+  delete entries[selectedDate];
+  saveEntries(entries);
+  periodStatus.value = "";
+  flowLevel.value = "";
+  symptoms.value = "";
+  notes.value = "";
+  renderCalendar();
+  renderEntryList();
+});
+
+prevMonthButton.addEventListener("click", () => {
+  activeMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth() - 1, 1);
+  renderCalendar();
+});
+
+nextMonthButton.addEventListener("click", () => {
+  activeMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth() + 1, 1);
+  renderCalendar();
+});
+
+const init = () => {
+  const user = loadUser();
+  if (user) {
+    updateUserHeader(user);
+    setActiveView(true);
+  } else {
+    setActiveView(false);
+  }
 
   renderCalendar();
-}
+  renderEntryList();
+  entryPanel.classList.add("hidden");
+};
+
+init();
+src/styles.css
+New
++219
+-0
+
