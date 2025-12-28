@@ -1,89 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cycle Compass</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="page">
-      <header class="hero">
-        <div>
-          <p class="eyebrow">Cycle Compass</p>
-          <h1>Track your menstrual cycle with confidence.</h1>
-          <p class="subtitle">
-            Log your latest period, predict upcoming cycles, and keep notes about how you feel—all in one
-            calm, private space.
-          </p>
-        </div>
-        <div class="hero-card">
-          <div>
-            <p class="label">Next period</p>
-            <p class="value" id="next-period">—</p>
-          </div>
-          <div>
-            <p class="label">Fertile window</p>
-            <p class="value" id="fertile-window">—</p>
-          </div>
-          <div>
-            <p class="label">Cycle day</p>
-            <p class="value" id="cycle-day">—</p>
-          </div>
-        </div>
-      </header>
+<body>
 
-      <main>
-        <section class="panel">
-          <h2>Cycle details</h2>
-          <p class="panel-subtitle">Add the essentials to keep your predictions accurate.</p>
-          <form id="cycle-form">
-            <label>
-              Last period start date
-              <input type="date" id="last-period" required />
-            </label>
-            <label>
-              Average cycle length (days)
-              <input type="number" id="cycle-length" min="20" max="45" required />
-            </label>
-            <label>
-              Typical period length (days)
-              <input type="number" id="period-length" min="2" max="10" required />
-            </label>
-            <button type="submit">Update predictions</button>
-          </form>
-        </section>
+<div id="login">
+  <h2>Welcome</h2>
+  <input id="username" placeholder="Username">
+  <input id="pin" type="password" placeholder="PIN">
+  <button onclick="login()">Enter</button>
+</div>
 
-        <section class="panel">
-          <h2>Wellness notes</h2>
-          <p class="panel-subtitle">
-            Capture symptoms, mood shifts, or reminders. Your notes stay on this device.
-          </p>
-          <div class="notes">
-            <textarea id="notes" rows="6" placeholder="Example: mild cramps, low energy, hydrated well..."></textarea>
-            <div class="notes-actions">
-              <button id="save-notes" type="button">Save notes</button>
-              <button id="clear-notes" class="ghost" type="button">Clear</button>
-            </div>
-            <p class="notes-status" id="notes-status">Notes are stored locally.</p>
-          </div>
-        </section>
+<div id="app" style="display:none;">
+  <h1>🩸 Period Tracker</h1>
+  <div id="calendar"></div>
+</div>
 
-        <section class="panel tips">
-          <h2>Care reminders</h2>
-          <ul>
-            <li>Stay hydrated and aim for steady meals to help with energy levels.</li>
-            <li>Light movement can reduce cramping and improve sleep quality.</li>
-            <li>Check in with your body and rest when you need to.</li>
-          </ul>
-        </section>
-      </main>
-    </div>
-
-    <footer>
-      <p>Cycle Compass is a personal tracker and does not replace medical advice.</p>
-    </footer>
-
-    <script src="script.js"></script>
-  </body>
-</html>
+<script src="script.js"></script>
+</body>
