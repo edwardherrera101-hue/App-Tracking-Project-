@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cycle Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Cycle Tracker</h1>
+      <p class="subtitle">
+        Track cycle timing, symptoms, flow, ovulation, and context while keeping
+        control of your data.
+      </p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Log a Cycle</h2>
+        <form id="cycle-form">
+          <div class="grid">
+            <label>
+              First day of bleeding
+              <input type="date" id="start-date" required />
+            </label>
+            <label>
+              Last day of bleeding
+              <input type="date" id="end-date" required />
+            </label>
+            <label>
+              Period length
+              <input type="text" id="period-length" readonly />
+            </label>
+            <label>
+              Cycle length
+              <input type="text" id="cycle-length" readonly />
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Symptoms</legend>
+            <div class="checkbox-grid">
+              <label><input type="checkbox" value="Cramps" /> Cramps</label>
+              <label><input type="checkbox" value="Headaches" /> Headaches</label>
+              <label><input type="checkbox" value="Bloating" /> Bloating</label>
+              <label
+                ><input type="checkbox" value="Breast tenderness" /> Breast
+                tenderness</label
+              >
+              <label><input type="checkbox" value="Acne" /> Acne</label>
+              <label><input type="checkbox" value="Fatigue" /> Fatigue</label>
+              <label
+                ><input type="checkbox" value="Mood changes" /> Mood changes</label
+              >
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Flow</legend>
+            <div class="inline-group">
+              <label><input type="radio" name="flow" value="Light" /> Light</label>
+              <label
+                ><input type="radio" name="flow" value="Medium" /> Medium</label
+              >
+              <label><input type="radio" name="flow" value="Heavy" /> Heavy</label>
+              <label
+                ><input type="radio" name="flow" value="Spotting" /> Spotting</label
+              >
+            </div>
+            <label>
+              Clots
+              <select id="clots">
+                <option value="None">None</option>
+                <option value="Small">Small</option>
+                <option value="Large">Large</option>
+              </select>
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Ovulation Awareness (optional)</legend>
+            <div class="grid">
+              <label>
+                Estimated ovulation
+                <input type="text" id="estimated-ovulation" readonly />
+              </label>
+              <label>
+                Cervical mucus change
+                <select id="mucus">
+                  <option value="Not noted">Not noted</option>
+                  <option value="Dry">Dry</option>
+                  <option value="Sticky">Sticky</option>
+                  <option value="Creamy">Creamy</option>
+                  <option value="Egg-white">Egg-white</option>
+                </select>
+              </label>
+              <label>
+                Libido change
+                <select id="libido">
+                  <option value="Not noted">Not noted</option>
+                  <option value="Low">Low</option>
+                  <option value="Normal">Normal</option>
+                  <option value="High">High</option>
+                </select>
+              </label>
+              <label>
+                Energy level
+                <select id="energy">
+                  <option value="Not noted">Not noted</option>
+                  <option value="Low">Low</option>
+                  <option value="Steady">Steady</option>
+                  <option value="High">High</option>
+                </select>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Context</legend>
+            <div class="grid">
+              <label>
+                Stress
+                <select id="stress">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </label>
+              <label>
+                Sleep (hours)
+                <input type="number" id="sleep" min="0" max="24" step="0.5" />
+              </label>
+              <label>
+                Exercise
+                <select id="exercise">
+                  <option value="None">None</option>
+                  <option value="Light">Light</option>
+                  <option value="Moderate">Moderate</option>
+                  <option value="Intense">Intense</option>
+                </select>
+              </label>
+              <label>
+                Illness
+                <input type="text" id="illness" placeholder="Cold, flu, etc." />
+              </label>
+              <label>
+                Travel
+                <input type="text" id="travel" placeholder="Time zone changes" />
+              </label>
+              <label>
+                Diet changes
+                <input type="text" id="diet" placeholder="New diet or cravings" />
+              </label>
+              <label>
+                Birth control / meds
+                <input type="text" id="meds" placeholder="Pill, IUD, supplements" />
+              </label>
+            </div>
+          </fieldset>
+
+          <label class="full-width">
+            Notes
+            <textarea id="notes" rows="3"></textarea>
+          </label>
+
+          <div class="actions">
+            <button type="submit">Save cycle</button>
+            <button type="button" id="reset-form">Clear form</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Patterns & Predictions</h2>
+        <div class="grid">
+          <div>
+            <h3>Cycle patterns</h3>
+            <p><strong>Average cycle length:</strong> <span id="avg-cycle">—</span></p>
+            <p><strong>Variability:</strong> <span id="variability">—</span></p>
+            <p><strong>Irregularity flag:</strong> <span id="irregular">—</span></p>
+          </div>
+          <div>
+            <h3>Next estimates</h3>
+            <p><strong>Next period start:</strong> <span id="next-period">—</span></p>
+            <p><strong>Next ovulation:</strong> <span id="next-ovulation">—</span></p>
+            <p class="hint">Based on your average cycle length.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Cycle History (Calendar View)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Start</th>
+                <th>End</th>
+                <th>Period length</th>
+                <th>Cycle length</th>
+                <th>Flow</th>
+                <th>Symptoms</th>
+              </tr>
+            </thead>
+            <tbody id="history-table"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Privacy & Ownership</h2>
+        <p>
+          Your data stays on this device in local storage. Export or delete it at
+          any time.
+        </p>
+        <div class="actions">
+          <button type="button" id="export-data">Export data</button>
+          <button type="button" id="delete-data" class="danger">
+            Delete all data
+          </button>
+        </div>
+        <pre id="export-output" aria-live="polite"></pre>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Cycle tracking is personal. If something feels off or symptoms are
+        severe, consult a healthcare professional.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
