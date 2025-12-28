@@ -9,6 +9,7 @@
   --accent-dark: #5b3ee4;
   --border: #e3dff0;
   --danger: #e1525c;
+  --soft: #f0ecfb;
 }
 
 * {
@@ -55,20 +56,16 @@ main {
   border: 1px solid var(--border);
 }
 
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 h2 {
   margin-top: 0;
-}
-
-fieldset {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1rem;
-  margin: 1.2rem 0;
-}
-
-legend {
-  padding: 0 0.5rem;
-  font-weight: 600;
 }
 
 label {
@@ -104,16 +101,9 @@ input[readonly] {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.75rem;
+  margin-top: 1rem;
 }
 
-.inline-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-}
-
-.inline-group label,
 .checkbox-grid label {
   flex-direction: row;
   align-items: center;
@@ -153,6 +143,111 @@ button.danger {
 
 button.danger:hover {
   background: #c8424b;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--accent-dark);
+  border: 1px solid var(--border);
+}
+
+button.ghost:hover {
+  background: var(--soft);
+}
+
+.login-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 420px;
+}
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.calendar-controls h3 {
+  margin: 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.calendar-day,
+.calendar-header {
+  text-align: center;
+  padding: 0.65rem 0.5rem;
+  border-radius: 12px;
+}
+
+.calendar-header {
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--soft);
+}
+
+.calendar-day button {
+  width: 100%;
+  padding: 0.6rem 0;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.calendar-day button:hover {
+  border-color: var(--accent);
+}
+
+.calendar-day.has-entry button {
+  background: #ebe6ff;
+  border-color: #d4c9ff;
+}
+
+.calendar-day.is-selected button {
+  background: var(--accent);
+  color: #fff;
+}
+
+.calendar-day .dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin: 6px auto 0;
+  background: var(--accent-dark);
+}
+
+.calendar-day .dot.start {
+  background: #f76c6c;
+}
+
+.calendar-day .dot.end {
+  background: #f1a208;
+}
+
+.calendar-day .dot.bleeding {
+  background: #c459ff;
+}
+
+details {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem 1rem;
+  margin-top: 1rem;
+  background: #faf9ff;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .table-wrap {

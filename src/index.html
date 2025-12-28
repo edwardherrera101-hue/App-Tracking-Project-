@@ -16,212 +16,257 @@
     </header>
 
     <main>
-      <section class="card">
-        <h2>Log a Cycle</h2>
-        <form id="cycle-form">
-          <div class="grid">
-            <label>
-              First day of bleeding
-              <input type="date" id="start-date" required />
-            </label>
-            <label>
-              Last day of bleeding
-              <input type="date" id="end-date" required />
-            </label>
-            <label>
-              Period length
-              <input type="text" id="period-length" readonly />
-            </label>
-            <label>
-              Cycle length
-              <input type="text" id="cycle-length" readonly />
-            </label>
-          </div>
-
-          <fieldset>
-            <legend>Symptoms</legend>
-            <div class="checkbox-grid">
-              <label><input type="checkbox" value="Cramps" /> Cramps</label>
-              <label><input type="checkbox" value="Headaches" /> Headaches</label>
-              <label><input type="checkbox" value="Bloating" /> Bloating</label>
-              <label
-                ><input type="checkbox" value="Breast tenderness" /> Breast
-                tenderness</label
-              >
-              <label><input type="checkbox" value="Acne" /> Acne</label>
-              <label><input type="checkbox" value="Fatigue" /> Fatigue</label>
-              <label
-                ><input type="checkbox" value="Mood changes" /> Mood changes</label
-              >
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Flow</legend>
-            <div class="inline-group">
-              <label><input type="radio" name="flow" value="Light" /> Light</label>
-              <label
-                ><input type="radio" name="flow" value="Medium" /> Medium</label
-              >
-              <label><input type="radio" name="flow" value="Heavy" /> Heavy</label>
-              <label
-                ><input type="radio" name="flow" value="Spotting" /> Spotting</label
-              >
-            </div>
-            <label>
-              Clots
-              <select id="clots">
-                <option value="None">None</option>
-                <option value="Small">Small</option>
-                <option value="Large">Large</option>
-              </select>
-            </label>
-          </fieldset>
-
-          <fieldset>
-            <legend>Ovulation Awareness (optional)</legend>
-            <div class="grid">
-              <label>
-                Estimated ovulation
-                <input type="text" id="estimated-ovulation" readonly />
-              </label>
-              <label>
-                Cervical mucus change
-                <select id="mucus">
-                  <option value="Not noted">Not noted</option>
-                  <option value="Dry">Dry</option>
-                  <option value="Sticky">Sticky</option>
-                  <option value="Creamy">Creamy</option>
-                  <option value="Egg-white">Egg-white</option>
-                </select>
-              </label>
-              <label>
-                Libido change
-                <select id="libido">
-                  <option value="Not noted">Not noted</option>
-                  <option value="Low">Low</option>
-                  <option value="Normal">Normal</option>
-                  <option value="High">High</option>
-                </select>
-              </label>
-              <label>
-                Energy level
-                <select id="energy">
-                  <option value="Not noted">Not noted</option>
-                  <option value="Low">Low</option>
-                  <option value="Steady">Steady</option>
-                  <option value="High">High</option>
-                </select>
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend>Context</legend>
-            <div class="grid">
-              <label>
-                Stress
-                <select id="stress">
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
-              </label>
-              <label>
-                Sleep (hours)
-                <input type="number" id="sleep" min="0" max="24" step="0.5" />
-              </label>
-              <label>
-                Exercise
-                <select id="exercise">
-                  <option value="None">None</option>
-                  <option value="Light">Light</option>
-                  <option value="Moderate">Moderate</option>
-                  <option value="Intense">Intense</option>
-                </select>
-              </label>
-              <label>
-                Illness
-                <input type="text" id="illness" placeholder="Cold, flu, etc." />
-              </label>
-              <label>
-                Travel
-                <input type="text" id="travel" placeholder="Time zone changes" />
-              </label>
-              <label>
-                Diet changes
-                <input type="text" id="diet" placeholder="New diet or cravings" />
-              </label>
-              <label>
-                Birth control / meds
-                <input type="text" id="meds" placeholder="Pill, IUD, supplements" />
-              </label>
-            </div>
-          </fieldset>
-
-          <label class="full-width">
-            Notes
-            <textarea id="notes" rows="3"></textarea>
+      <section id="login-screen" class="card">
+        <h2>Welcome back</h2>
+        <p class="hint">
+          Log in with a name to keep your cycle data saved locally on this
+          device.
+        </p>
+        <form id="login-form" class="login-form">
+          <label>
+            Name
+            <input type="text" id="username" required placeholder="e.g. Alex" />
           </label>
-
-          <div class="actions">
-            <button type="submit">Save cycle</button>
-            <button type="button" id="reset-form">Clear form</button>
-          </div>
+          <button type="submit">Log in</button>
         </form>
       </section>
 
-      <section class="card">
-        <h2>Patterns & Predictions</h2>
-        <div class="grid">
-          <div>
-            <h3>Cycle patterns</h3>
-            <p><strong>Average cycle length:</strong> <span id="avg-cycle">—</span></p>
-            <p><strong>Variability:</strong> <span id="variability">—</span></p>
-            <p><strong>Irregularity flag:</strong> <span id="irregular">—</span></p>
+      <div id="app" hidden>
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2>Cycle Calendar</h2>
+              <p class="hint">
+                Select a day to log start/end of bleeding, symptoms, flow, and
+                context.
+              </p>
+            </div>
+            <div class="actions">
+              <button type="button" id="logout" class="ghost">Log out</button>
+            </div>
           </div>
-          <div>
-            <h3>Next estimates</h3>
-            <p><strong>Next period start:</strong> <span id="next-period">—</span></p>
-            <p><strong>Next ovulation:</strong> <span id="next-ovulation">—</span></p>
-            <p class="hint">Based on your average cycle length.</p>
+          <div class="calendar-controls">
+            <button type="button" id="prev-month" aria-label="Previous month">
+              ◀
+            </button>
+            <h3 id="month-label"></h3>
+            <button type="button" id="next-month" aria-label="Next month">
+              ▶
+            </button>
           </div>
-        </div>
-      </section>
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </section>
 
-      <section class="card">
-        <h2>Cycle History (Calendar View)</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Start</th>
-                <th>End</th>
-                <th>Period length</th>
-                <th>Cycle length</th>
-                <th>Flow</th>
-                <th>Symptoms</th>
-              </tr>
-            </thead>
-            <tbody id="history-table"></tbody>
-          </table>
-        </div>
-      </section>
+        <section class="card" id="daily-log">
+          <h2>Daily Log</h2>
+          <p class="hint">
+            Choose a date on the calendar to open this log. Use the toggles and
+            dropdowns to capture what happened that day.
+          </p>
+          <form id="daily-form">
+            <div class="grid">
+              <label>
+                Selected date
+                <input
+                  type="text"
+                  id="selected-date"
+                  readonly
+                  placeholder="Select a day"
+                />
+              </label>
+              <label>
+                Period status
+                <select id="period-status">
+                  <option value="">None</option>
+                  <option value="Start">Period start</option>
+                  <option value="Bleeding">Bleeding day</option>
+                  <option value="End">Period end</option>
+                </select>
+              </label>
+              <label>
+                Flow intensity
+                <select id="flow">
+                  <option value="">Not noted</option>
+                  <option value="Light">Light</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Heavy">Heavy</option>
+                  <option value="Spotting">Spotting</option>
+                </select>
+              </label>
+              <label>
+                Clots
+                <select id="clots">
+                  <option value="">Not noted</option>
+                  <option value="None">None</option>
+                  <option value="Small">Small</option>
+                  <option value="Large">Large</option>
+                </select>
+              </label>
+            </div>
 
-      <section class="card">
-        <h2>Privacy & Ownership</h2>
-        <p>
-          Your data stays on this device in local storage. Export or delete it at
-          any time.
-        </p>
-        <div class="actions">
-          <button type="button" id="export-data">Export data</button>
-          <button type="button" id="delete-data" class="danger">
-            Delete all data
-          </button>
-        </div>
-        <pre id="export-output" aria-live="polite"></pre>
-      </section>
+            <details>
+              <summary>Symptoms</summary>
+              <div class="checkbox-grid">
+                <label><input type="checkbox" value="Cramps" /> Cramps</label>
+                <label><input type="checkbox" value="Headaches" /> Headaches</label>
+                <label><input type="checkbox" value="Bloating" /> Bloating</label>
+                <label
+                  ><input type="checkbox" value="Breast tenderness" /> Breast
+                  tenderness</label
+                >
+                <label><input type="checkbox" value="Acne" /> Acne</label>
+                <label><input type="checkbox" value="Fatigue" /> Fatigue</label>
+                <label
+                  ><input type="checkbox" value="Mood changes" /> Mood changes</label
+                >
+              </div>
+            </details>
+
+            <details>
+              <summary>Ovulation awareness (optional)</summary>
+              <div class="grid">
+                <label>
+                  Cervical mucus change
+                  <select id="mucus">
+                    <option value="Not noted">Not noted</option>
+                    <option value="Dry">Dry</option>
+                    <option value="Sticky">Sticky</option>
+                    <option value="Creamy">Creamy</option>
+                    <option value="Egg-white">Egg-white</option>
+                  </select>
+                </label>
+                <label>
+                  Libido change
+                  <select id="libido">
+                    <option value="Not noted">Not noted</option>
+                    <option value="Low">Low</option>
+                    <option value="Normal">Normal</option>
+                    <option value="High">High</option>
+                  </select>
+                </label>
+                <label>
+                  Energy level
+                  <select id="energy">
+                    <option value="Not noted">Not noted</option>
+                    <option value="Low">Low</option>
+                    <option value="Steady">Steady</option>
+                    <option value="High">High</option>
+                  </select>
+                </label>
+              </div>
+            </details>
+
+            <details>
+              <summary>Context</summary>
+              <div class="grid">
+                <label>
+                  Stress
+                  <select id="stress">
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </label>
+                <label>
+                  Sleep (hours)
+                  <input type="number" id="sleep" min="0" max="24" step="0.5" />
+                </label>
+                <label>
+                  Exercise
+                  <select id="exercise">
+                    <option value="None">None</option>
+                    <option value="Light">Light</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Intense">Intense</option>
+                  </select>
+                </label>
+                <label>
+                  Illness
+                  <input type="text" id="illness" placeholder="Cold, flu, etc." />
+                </label>
+                <label>
+                  Travel
+                  <input type="text" id="travel" placeholder="Time zone changes" />
+                </label>
+                <label>
+                  Diet changes
+                  <input type="text" id="diet" placeholder="New diet or cravings" />
+                </label>
+                <label>
+                  Birth control / meds
+                  <input type="text" id="meds" placeholder="Pill, IUD, supplements" />
+                </label>
+              </div>
+            </details>
+
+            <label class="full-width">
+              Notes
+              <textarea id="notes" rows="3"></textarea>
+            </label>
+
+            <div class="actions">
+              <button type="submit">Save day</button>
+              <button type="button" id="clear-day" class="ghost">
+                Clear day
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card">
+          <h2>Patterns & Predictions</h2>
+          <div class="grid">
+            <div>
+              <h3>Cycle patterns</h3>
+              <p>
+                <strong>Average cycle length:</strong>
+                <span id="avg-cycle">—</span>
+              </p>
+              <p><strong>Variability:</strong> <span id="variability">—</span></p>
+              <p><strong>Irregularity flag:</strong> <span id="irregular">—</span></p>
+            </div>
+            <div>
+              <h3>Next estimates</h3>
+              <p><strong>Next period start:</strong> <span id="next-period">—</span></p>
+              <p><strong>Next ovulation:</strong> <span id="next-ovulation">—</span></p>
+              <p class="hint">Based on your average cycle length.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Cycle History</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Period status</th>
+                  <th>Flow</th>
+                  <th>Symptoms</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="history-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Privacy & Ownership</h2>
+          <p>
+            Your data stays on this device in local storage. Export or delete it
+            at any time.
+          </p>
+          <div class="actions">
+            <button type="button" id="export-data">Export data</button>
+            <button type="button" id="delete-data" class="danger">
+              Delete my data
+            </button>
+          </div>
+          <pre id="export-output" aria-live="polite"></pre>
+        </section>
+      </div>
     </main>
 
     <footer>
